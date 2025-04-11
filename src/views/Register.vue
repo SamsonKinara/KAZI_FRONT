@@ -74,7 +74,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import api from '@/axios';
   
   export default {
     data() {
@@ -93,24 +93,18 @@
         this.errorMessage = '';
   
         try {
-          await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
-            withCredentials: true,
+          const response = await api.post('/register', {
+            name: this.name,
+            email: this.email,
+            password: this.password,
+            password_confirmation: this.password_confirmation,
           });
   
-          const response = await axios.post(
-            'http://localhost:8000/register',
-            {
-              name: this.name,
-              email: this.email,
-              password: this.password,
-              password_confirmation: this.password_confirmation,
-            },
-            {
-              withCredentials: true,
-            }
-          );
+          const token = response.data.access_token;
+          localStorage.setItem('access_token', token);
   
-          console.log('✅ Registered:', response.data);
+          console.log('✅ Registered and token stored:', token);
+  
           this.$router.push('/dashboard');
         } catch (error) {
           console.error('❌ Registration error:', error);

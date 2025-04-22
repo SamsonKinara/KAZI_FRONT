@@ -1,7 +1,8 @@
+// src/axios.js
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api', // No `/login` on root anymore
+  baseURL: 'http://localhost:8000/api', // ✅ use /api prefix for token-based routes
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',

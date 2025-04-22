@@ -31,10 +31,10 @@
             />
           </div>
 
-          <button type="submit" :disabled="loading">Login</button>
+          <button type="submit" :disabled="loading">
+            {{ loading ? 'Logging in...' : 'Login' }}
+          </button>
         </form>
-
-        <div v-if="loading" class="loading-spinner">Logging in...</div>
 
         <p class="signup-link">
           Don't have an account?
@@ -72,7 +72,7 @@ export default {
           password: this.password,
         });
 
-        const token = response.data.token;
+        const token = response.data.access_token;
         localStorage.setItem('auth_token', token);
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
@@ -80,7 +80,8 @@ export default {
         this.$router.push('/dashboard');
       } catch (error) {
         console.error('❌ Login error:', error);
-        this.errorMessage = error.response?.data?.message || 'Login failed.';
+        this.errorMessage =
+          error.response?.data?.message || 'Login failed. Please try again.';
       } finally {
         this.loading = false;
       }
@@ -161,7 +162,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: #0a7030;
 }
 
@@ -170,11 +171,6 @@ button:hover {
   font-size: 0.9rem;
   margin-bottom: 10px;
   font-weight: bold;
-}
-
-.loading-spinner {
-  color: #333;
-  margin-top: 10px;
 }
 
 .signup-link {

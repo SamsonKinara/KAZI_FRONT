@@ -3,8 +3,8 @@
     <header class="navbar">
       <div class="logo">KAZI HUB</div>
       <nav>
-        <router-link to="/" class="nav-link">Login</router-link>
-        <router-link to="/login" class="nav-link active">Home</router-link>
+        <router-link to="/" class="nav-link active">Home</router-link>
+        <router-link to="/login" class="nav-link">Login</router-link>
         <router-link to="/signup" class="nav-link">Sign Up</router-link>
       </nav>
     </header>
@@ -68,22 +68,30 @@ export default {
       this.errorMessage = '';
 
       try {
+        // Step 1: Get CSRF cookie to allow session-based authentication (only if needed)
         await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
           withCredentials: true,
         });
 
+        // Step 2: Send login credentials to backend
         const response = await axios.post(
-          'http://localhost:8000/login',
+          'http://localhost:8000/api/login', // Updated to use your API route for login
           {
             email: this.username,
             password: this.password,
           },
           {
-            withCredentials: true,
+            withCredentials: true, // Allow cookies for session authentication
           }
         );
 
         console.log('✅ Logged in:', response.data);
+        
+        // Assuming the response returns a token
+        const token = response.data.token;
+        localStorage.setItem('auth_token', token); // Store token for future API requests
+
+        // Redirect to the dashboard after successful login
         this.$router.push('/dashboard');
       } catch (error) {
         console.error('❌ Login error:', error);

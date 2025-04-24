@@ -36,6 +36,8 @@
           </button>
         </form>
 
+        <div v-if="loading" class="loading-spinner">Logging in...</div>
+
         <p class="signup-link">
           Don't have an account?
           <router-link to="/signup">Sign up</router-link>
@@ -50,15 +52,15 @@
 </template>
 
 <script>
-import api from '@/axios';
+import axios from 'axios';
 
 export default {
   data() {
     return {
       email: '',
       password: '',
-      errorMessage: '',
       loading: false,
+      errorMessage: '',
     };
   },
   methods: {
@@ -67,21 +69,25 @@ export default {
       this.errorMessage = '';
 
       try {
-        const response = await api.post('/login', {
+        const response = await axios.post('http://localhost:8000/api/login', {
           email: this.email,
           password: this.password,
         });
 
         const token = response.data.access_token;
-        localStorage.setItem('auth_token', token);
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        console.log('✅ Logged in:', response.data);
-        this.$router.push('/dashboard');
+        if (token) {
+          localStorage.setItem('access_token', token);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          console.log('✅ Logged in and token stored:', token);
+          this.$router.push('/dashboard');
+        } else {
+          throw new Error('No token returned from login response.');
+        }
       } catch (error) {
         console.error('❌ Login error:', error);
         this.errorMessage =
-          error.response?.data?.message || 'Login failed. Please try again.';
+          error.response?.data?.message || 'Login failed. Please check your credentials.';
       } finally {
         this.loading = false;
       }
@@ -171,6 +177,11 @@ button:hover:not(:disabled) {
   font-size: 0.9rem;
   margin-bottom: 10px;
   font-weight: bold;
+}
+
+.loading-spinner {
+  margin-top: 10px;
+  color: #333;
 }
 
 .signup-link {

@@ -16,15 +16,17 @@ const router = createRouter({
   routes,
 });
 
-// ✅ Navigation Guards
+// ✅ Navigation Guard for Auth
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('auth_token');
+  const token = localStorage.getItem('access_token');
+  const isAuthenticated = !!token;
 
+  // If route requires auth and not logged in → redirect to login
   if (to.meta.requiresAuth && !isAuthenticated) {
-    // Not authenticated, redirect to login
     next({ name: 'Login' });
-  } else if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
-    // If already logged in, don't allow going back to login/register
+  }
+  // If already logged in and tries to access login or register → redirect to dashboard
+  else if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
     next({ name: 'Dashboard' });
   } else {
     next();

@@ -1,10 +1,22 @@
 <template>
-    <div class="login-page">
-      <main class="login-content">
-        <section class="login-form">
-          <h2>Login to KAZI HUB</h2>
+    <div class="signup-page">
+      
+      <main class="signup-content">
+        <section class="signup-form">
+          <h2>Sign Up to KAZI HUB</h2>
   
-          <form @submit.prevent="handleLogin">
+          <form @submit.prevent="handleSignup">
+            <div class="input-group">
+              <label for="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                v-model="name"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+  
             <div class="input-group">
               <label for="email">Email</label>
               <input
@@ -28,13 +40,13 @@
             </div>
   
             <button type="submit" :disabled="loading">
-              {{ loading ? 'Logging in...' : 'Login' }}
+              {{ loading ? 'Signing up...' : 'Sign Up' }}
             </button>
           </form>
   
           <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
-          <p class="signup-link">
-            Don't have an account? <router-link to="/signup">Sign up</router-link>
+          <p class="login-link">
+            Already have an account? <router-link to="/login">Login</router-link>
           </p>
         </section>
       </main>
@@ -46,11 +58,13 @@
   </template>
   
   <script>
+  // Import Axios for making HTTP requests
   import axios from 'axios';
   
   export default {
     data() {
       return {
+        name: '',
         email: '',
         password: '',
         loading: false,
@@ -58,27 +72,27 @@
       };
     },
     methods: {
-      async handleLogin() {
+      async handleSignup() {
         this.loading = true;
         this.errorMessage = '';
   
         try {
-          const response = await axios.post('http://localhost:8000/api/login', {
+          const response = await axios.post('http://localhost:8000/api/signup', {
+            name: this.name,
             email: this.email,
             password: this.password,
           });
   
-          const token = response.data.access_token;
-          if (token) {
-            localStorage.setItem('access_token', token);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            this.$router.push('/'); // Redirect to home or dashboard
-          } else {
-            throw new Error('No token returned from login response.');
-          }
+          // Handle the response (for example, redirect to login or home)
+          this.$router.push('/login');  // Redirect to login page after successful signup
         } catch (error) {
-          this.errorMessage =
-            error.response?.data?.message || 'Login failed. Please check your credentials.';
+          console.error('Signup error:', error);
+          // Better error handling
+          if (error.response && error.response.data) {
+            this.errorMessage = error.response.data.message || 'Signup failed. Please try again.';
+          } else {
+            this.errorMessage = 'An unexpected error occurred. Please try again later.';
+          }
         } finally {
           this.loading = false;
         }
@@ -88,10 +102,10 @@
   </script>
   
   <style scoped>
-  /* Add styles for your login page */
+  /* Add styles for your signup page */
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
   
-  .login-page {
+  .signup-page {
     font-family: 'Poppins', sans-serif;
     background-color: #f7f7f7;
     min-height: 100vh;
@@ -100,13 +114,37 @@
     flex-direction: column;
   }
   
-  .login-content {
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background-color: #3b9f61;
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .nav-link {
+    margin-left: 1rem;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline;
+  }
+  
+  .signup-content {
     max-width: 1200px;
     margin: 3rem auto;
     padding: 0 1rem;
   }
   
-  .login-form {
+  .signup-form {
     background-color: white;
     padding: 2rem;
     border-radius: 8px;
@@ -115,7 +153,7 @@
     margin: 0 auto;
   }
   
-  .login-form h2 {
+  .signup-form h2 {
     font-size: 2rem;
     text-align: center;
     margin-bottom: 1rem;
@@ -173,18 +211,18 @@
     text-align: center;
   }
   
-  .signup-link {
+  .login-link {
     text-align: center;
     font-size: 0.95rem;
   }
   
-  .signup-link a {
+  .login-link a {
     color: #4caf50;
     text-decoration: none;
     font-weight: bold;
   }
   
-  .signup-link a:hover {
+  .login-link a:hover {
     text-decoration: underline;
   }
   

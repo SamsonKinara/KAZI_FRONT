@@ -1,49 +1,43 @@
 <template>
-  <div class="login-page">
-    <header class="navbar">
-      <div class="logo">KAZI HUB</div>
-      <nav>
-        <router-link to="/" class="nav-link active">Home</router-link>
-        <router-link to="/login" class="nav-link">Login</router-link>
-        <router-link to="/signup" class="nav-link">Sign Up</router-link>
-      </nav>
-    </header>
+  <div class="home-page">
+    <!-- Main Content -->
+    <main class="home-content">
+      <section class="hero">
+        <h2>Welcome to KAZI HUB</h2>
+        <p>Find amazing job opportunities or post your service needs. Let's build your career!</p>
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Search jobs..."
+          @input="searchJobs"
+        />
+      </section>
 
-    <main class="login-form">
-      <h1>Welcome Back</h1>
-      <p>Please log in to your account</p>
-
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            v-model="username"
-            placeholder="Enter your email"
-            required
-          />
+      <!-- Job Categories -->
+      <section class="job-categories">
+        <h3>Explore Job Categories</h3>
+        <div class="categories">
+          <div class="category" v-for="category in categories" :key="category.id">
+            <h4>{{ category.name }}</h4>
+            <p>{{ category.description }}</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            placeholder="Enter your password"
-            required
-            minlength="6"
-          />
-        </div>
+      </section>
 
-        <button type="submit" :disabled="loading">
-          {{ loading ? "Logging in..." : "Login" }}
-        </button>
-      </form>
+      <!-- Featured Jobs -->
+      <section class="featured-jobs">
+        <h3>Featured Jobs</h3>
+        <div class="jobs">
+          <div class="job-card" v-for="job in featuredJobs" :key="job.id">
+            <h4>{{ job.title }}</h4>
+            <p>{{ job.description }}</p>
+            <router-link :to="'/job/' + job.id" class="job-link">View Details</router-link>
+          </div>
+        </div>
+      </section>
     </main>
 
+    <!-- Footer -->
     <footer>
       <p>&copy; 2025 KAZI HUB | All Rights Reserved</p>
     </footer>
@@ -51,158 +45,163 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
-      username: '',
-      password: '',
-      errorMessage: '',
-      loading: false,
+      searchQuery: '',
+      categories: [
+        { id: 1, name: 'Web Development', description: 'Build and develop websites and apps.' },
+        { id: 2, name: 'Graphic Design', description: 'Create logos, marketing materials, and more.' },
+        { id: 3, name: 'Marketing', description: 'Digital marketing, SEO, and advertising services.' }
+      ],
+      featuredJobs: [
+        { id: 1, title: 'Build a website', description: 'We need a web developer to build a responsive website.' },
+        { id: 2, title: 'Design a logo', description: 'Looking for a logo design for a new tech startup.' },
+        { id: 3, title: 'Social Media Marketing', description: 'Help manage and grow our social media presence.' }
+      ]
     };
   },
   methods: {
-    async handleLogin() {
-      this.loading = true;
-      this.errorMessage = '';
-
-      try {
-        // Step 1: Get CSRF cookie to allow session-based authentication (only if needed)
-        await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
-          withCredentials: true,
-        });
-
-        // Step 2: Send login credentials to backend
-        const response = await axios.post(
-          'http://localhost:8000/api/login', // Updated to use your API route for login
-          {
-            email: this.username,
-            password: this.password,
-          },
-          {
-            withCredentials: true, // Allow cookies for session authentication
-          }
-        );
-
-        console.log('✅ Logged in:', response.data);
-        
-        // Assuming the response returns a token
-        const token = response.data.token;
-        localStorage.setItem('auth_token', token); // Store token for future API requests
-
-        // Redirect to the dashboard after successful login
-        this.$router.push('/dashboard');
-      } catch (error) {
-        console.error('❌ Login error:', error);
-        this.errorMessage =
-          error.response?.data?.message || 'Login failed. Please try again.';
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
+    searchJobs() {
+      console.log('Searching for:', this.searchQuery);
+      // Implement search functionality here
+    }
+  }
 };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-.login-page {
-  font-family: 'Julius Sans One', sans-serif;
-  background-color: #4caf50;
+.home-page {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f7f7f7;
   min-height: 100vh;
-  color: white;
+  color: #333;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background-color: #388e3c;
+.home-content {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 1rem;
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.nav-link {
-  margin-left: 1rem;
-  color: white;
-  text-decoration: none;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  text-decoration: underline;
-}
-
-.login-form {
-  background-color: white;
-  color: #333;
-  max-width: 400px;
-  margin: 5rem auto;
-  padding: 2rem;
-  border-radius: 10px;
+.hero {
   text-align: center;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  background-color: #388e3c;
+  padding: 2rem 1rem;
+  border-radius: 8px;
+  color: white;
 }
 
-.login-form h1 {
+.hero h2 {
+  font-size: 2.5rem;
   margin-bottom: 0.5rem;
 }
 
-.login-form p {
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.hero input {
+  padding: 1rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.job-categories,
+.featured-jobs {
+  margin-top: 3rem;
+}
+
+.job-categories h3,
+.featured-jobs h3 {
+  font-size: 2rem;
+  color: #333;
   margin-bottom: 1.5rem;
 }
 
-.form-group {
-  text-align: left;
-  margin-bottom: 1rem;
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
+.category {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+.category:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #4caf50;
-  color: white;
-  border: none;
+.category h4 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+}
+
+.category p {
   font-size: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
+  color: #7f8c8d;
 }
 
-button:disabled {
-  background-color: #a5d6a7;
-  cursor: not-allowed;
+.jobs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
 }
 
-.error-message {
-  color: red;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  font-weight: bold;
+.job-card {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.job-card:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.job-card h4 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+}
+
+.job-card p {
+  font-size: 1rem;
+  color: #7f8c8d;
+}
+
+.job-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #4caf50;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.job-link:hover {
+  text-decoration: underline;
 }
 
 footer {
   text-align: center;
   padding: 1rem;
+  background-color: #388e3c;
+  color: white;
   font-size: 0.9rem;
 }
 </style>

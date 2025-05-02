@@ -68,11 +68,11 @@
             password: this.password,
           });
   
-          const token = response.data.access_token;
+          const token = response.data.token; // Correct token property
           if (token) {
-            localStorage.setItem('access_token', token);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            this.$router.push('/'); // Redirect to home or dashboard
+            localStorage.setItem('access_token', token); // Store token in localStorage
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Set the Authorization header for all requests
+            this.$router.push('/'); // Redirect to home or dashboard after successful login
           } else {
             throw new Error('No token returned from login response.');
           }

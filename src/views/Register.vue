@@ -1,6 +1,5 @@
 <template>
     <div class="signup-page">
-      
       <main class="signup-content">
         <section class="signup-form">
           <h2>Sign Up to KAZI HUB</h2>
@@ -39,6 +38,17 @@
               />
             </div>
   
+            <div class="input-group">
+              <label for="password_confirmation">Confirm Password</label>
+              <input
+                type="password"
+                id="password_confirmation"
+                v-model="password_confirmation"
+                placeholder="Confirm your password"
+                required
+              />
+            </div>
+  
             <button type="submit" :disabled="loading">
               {{ loading ? 'Signing up...' : 'Sign Up' }}
             </button>
@@ -46,7 +56,8 @@
   
           <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
           <p class="login-link">
-            Already have an account? <router-link to="/login">Login</router-link>
+            Already have an account?
+            <router-link to="/login">Login</router-link>
           </p>
         </section>
       </main>
@@ -58,8 +69,7 @@
   </template>
   
   <script>
-  // Import Axios for making HTTP requests
-  import axios from 'axios';
+  import api from '@/axios';
   
   export default {
     data() {
@@ -67,6 +77,7 @@
         name: '',
         email: '',
         password: '',
+        password_confirmation: '',
         loading: false,
         errorMessage: '',
       };
@@ -77,21 +88,31 @@
         this.errorMessage = '';
   
         try {
-          const response = await axios.post('http://localhost:8000/api/signup', {
+          // Step 1: Register
+          await api.post('/register', {
             name: this.name,
+            email: this.email,
+            password: this.password,
+            password_confirmation: this.password_confirmation,
+          });
+  
+          // Step 2: Login immediately after registration
+          const loginResponse = await api.post('/login', {
             email: this.email,
             password: this.password,
           });
   
-          // Handle the response (for example, redirect to login or home)
-          this.$router.push('/login');  // Redirect to login page after successful signup
+          const token = loginResponse.data.token;
+          localStorage.setItem('access_token', token);
+  
+          // Step 3: Redirect to profile setup
+          this.$router.push('/profile-setup');
         } catch (error) {
-          console.error('Signup error:', error);
-          // Better error handling
           if (error.response && error.response.data) {
-            this.errorMessage = error.response.data.message || 'Signup failed. Please try again.';
+            this.errorMessage =
+              error.response.data.message || 'Signup failed. Please try again.';
           } else {
-            this.errorMessage = 'An unexpected error occurred. Please try again later.';
+            this.errorMessage = 'An unexpected error occurred.';
           }
         } finally {
           this.loading = false;
@@ -102,7 +123,6 @@
   </script>
   
   <style scoped>
-  /* Add styles for your signup page */
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
   
   .signup-page {
@@ -112,30 +132,6 @@
     color: #333;
     display: flex;
     flex-direction: column;
-  }
-  
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem 2rem;
-    background-color: #3b9f61;
-  }
-  
-  .logo {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: white;
-  }
-  
-  .nav-link {
-    margin-left: 1rem;
-    color: white;
-    font-weight: 500;
-    text-decoration: none;
-  }
-  
-  .nav-link:hover {
-    text-decoration: underline;
   }
   
   .signup-content {

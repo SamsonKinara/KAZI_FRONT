@@ -39,4 +39,16 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('access_token');
+  const authRequired = ['/dashboard', '/profile-setup'];
+
+  if (authRequired.includes(to.path) && !token) {
+    next('/login');
+  } else {
+    next();
+  }
+});
+  
+
 export default router;

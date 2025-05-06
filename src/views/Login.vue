@@ -46,7 +46,7 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import api from '@/axios';
   
   export default {
     data() {
@@ -63,7 +63,7 @@
         this.errorMessage = '';
   
         try {
-          const response = await axios.post('http://localhost:8000/api/login', {
+          const response = await axios.post('http://127.0.0.1:8000/api/login', {
             email: this.email,
             password: this.password,
           });
@@ -72,7 +72,7 @@
           if (token) {
             localStorage.setItem('access_token', token); // Store token in localStorage
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Set the Authorization header for all requests
-            this.$router.push('/'); // Redirect to home or dashboard after successful login
+            this.$router.push('/dashboard'); // Redirect to home or dashboard after successful login
           } else {
             throw new Error('No token returned from login response.');
           }

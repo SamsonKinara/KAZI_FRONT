@@ -81,7 +81,7 @@
   
         try {
           const response = await axios.put(
-            'http://localhost:8000/api/profile', 
+            `${process.env.APP_API_URL}/api/profile`, 
             {
               bio: this.bio,
               phone: this.phone,

@@ -32,6 +32,37 @@ const routes = [
     name: 'Dashboard',
     component: Dashboard,  // Removed lazy load for now to test
   },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: () => import('@/views/Contact.vue'),
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: () => import('@/views/AboutUs.vue'),
+  },
+  {
+    path: '/jobs',
+    name: 'Jobs', 
+    component: () => import('@/views/Jobs.vue'),
+  },
+  {
+    path: '/skills',
+    name: 'Skills',
+    component: () => import('@/views/Skills.vue')
+  },
+  {
+    path: '/Mentorship',
+    name: 'Mentorship',
+    component: () => import('@/views/Mentorship.vue')
+  },
+  { 
+    path: '/Networking',
+    name: 'Networking',
+    component: () => import('@/views/Networking.vue')
+  }
+  
 ];
 
 const router = createRouter({

@@ -42,7 +42,7 @@
     },
     async created() {
       try {
-        const response = await axios.get(`${process.env.APP_API_URL}/api/user`, {
+        const response = await axios.get('http://localhost:8000/api/profile', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },

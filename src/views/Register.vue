@@ -106,7 +106,7 @@ export default {
         localStorage.setItem('access_token', token);
 
         // Step 3: Redirect to profile setup if the profile isn't filled yet
-        this.$router.push('/profile-setup');
+        this.$router.push('/setup-profile');
       } catch (error) {
         if (error.response && error.response.data) {
           this.errorMessage =

@@ -61,42 +61,79 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  import axios from "axios";
   
   export default {
     data() {
       return {
         form: {
-          bio: '',
-          phone: '',
-          location: '',
-          profile_picture: '',
+          bio: "",
+          phone: "",
+          location: "",
+          profile_picture: "",
         },
         loading: false,
-        error: '',
+        error: "",
       };
+    },
+    async created() {
+      // Fetch existing profile and prefill form if available
+      try {
+        const token = localStorage.getItem("access_token");
+        if (!token) return;
+  
+        const response = await axios.get("http://localhost:8000/api/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        this.form = {
+          bio: response.data.bio || "",
+          phone: response.data.phone || "",
+          location: response.data.location || "",
+          profile_picture: response.data.profile_picture || "",
+        };
+      } catch (error) {
+        // Do nothing if profile doesn't exist yet or error occurs
+      }
     },
     methods: {
       async handleSubmit() {
         this.loading = true;
-        this.error = '';
+        this.error = "";
   
         try {
+          const token = localStorage.getItem("access_token");
+          if (!token) {
+            this.error = "You must be logged in to update your profile.";
+            this.loading = false;
+            return;
+          }
+  
           const response = await axios.post(
-            `${process.env.APP_API_URL}/api/profile-setup`,
+            "http://localhost:8000/api/profile",
             this.form,
             {
               headers: {
-                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+                Authorization: `Bearer ${token}`,
               },
             }
           );
   
           if (response.status === 200) {
-            this.$router.push('/profile');
+            this.$router.push("/profile");
           }
         } catch (err) {
-          this.error = 'Failed to update profile. Please try again.';
+          if (
+            err.response &&
+            err.response.data &&
+            err.response.data.message
+          ) {
+            this.error = err.response.data.message;
+          } else {
+            this.error = "Failed to update profile. Please try again.";
+          }
         } finally {
           this.loading = false;
         }
@@ -110,7 +147,7 @@
     background-color: #f4f7fa;
     min-height: 100vh;
     padding: 3rem 1rem;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
   }
   
   .setup-container {

@@ -61,7 +61,21 @@ const routes = [
     path: '/Networking',
     name: 'Networking',
     component: () => import('@/views/Networking.vue')
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/Profile.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/setup-profile',
+    name: 'SetupProfile',
+    component: () => import('@/views/SetupProfile.vue'),
+    meta: { requiresAuth: true },
   }
+  
+  
   
 ];
 

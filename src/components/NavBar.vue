@@ -25,6 +25,7 @@
       <router-link to="/skills" class="drawer-link">📚 Skills</router-link>
       <router-link to="/mentorship" class="drawer-link" @click="toggleDrawer">👥 Mentorship</router-link> 
       <router-link to="/networking" class="drawer-link" @click="toggleDrawer">🔗 Networking</router-link> 
+      <router-link v-if="isLoggedIn" to="/profile" class="drawer-link" @click="toggleDrawer">👤 Profile</router-link>
     </div>
 
     <!-- Overlay -->
